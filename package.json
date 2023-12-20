@@ -1,6 +1,6 @@
 {
   "name": "zorostreamts",
-  "version": "1.0.0",
+  "version": "1.0.0",  
   "description": "A TypeScript library for efficient retrieval of streaming links from the Zoro server, with easy integration and robust error handling.",
   "main": "dist/fetchStreamingLinks.js",
   "scripts": {
@@ -8,8 +8,19 @@
     "start": "ts-node fetchStreamingLinks.ts",
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "zoro",
+    "zorostream",
+    "zorostreamts",
+    "zoro stream",
+    "zoro stream ts",
+    "api",
+    "streaming",
+    "anime",
+    "anime streaming"
+  ],
+
+  "author": "Ashlin Darius Govindasamy",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.2",
