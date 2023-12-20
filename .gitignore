@@ -2,7 +2,6 @@
 node_modules/
 
 # TypeScript Compiler output
-dist/
 build/
 
 # Logs

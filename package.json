@@ -2,10 +2,11 @@
   "name": "zorostreamts",
   "version": "1.0.0",
   "description": "A TypeScript library for efficient retrieval of streaming links from the Zoro server, with easy integration and robust error handling.",
-  "main": "index.js",
+  "main": "dist/fetchStreamingLinks.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node fetchStreamingLinks.ts"
+    "start": "ts-node fetchStreamingLinks.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
