@@ -31,6 +31,23 @@ getAnimeEpisode(1, "One Piece").then((res) => {
 });
 ```
 
+## Mathematics for Searching ( Levenshtein distance algorithm )
+
+```math
+D(i, j) = 
+ \begin{cases} 
+  0 & \text{if } i = 0 \text{ and } j = 0 \\
+  i & \text{if } j = 0 \text{ and } i > 0 \\
+  j & \text{if } i = 0 \text{ and } j > 0 \\
+  D(i-1, j-1) & \text{if } S_1[i] = S_2[j] \\
+  1 + \min \begin{cases}
+    D(i-1, j),  & \text{(deletion)} \\
+    D(i, j-1),  & \text{(insertion)} \\
+    D(i-1, j-1) & \text{(substitution)}
+  \end{cases} & \text{otherwise}
+ \end{cases}
+```
+
 ## API Functions
 
 - `searchAnime(query: string)`: Searches for animes based on a query string.
