@@ -2,86 +2,55 @@ import axios from 'axios';
 
 const BASE_URL = "https://api-aniwatch.onrender.com/";
 
-async function searchAnime(query: string): Promise<any> {
-    // anime/search?q={query}&page={page}
-    const res = await axios.get(`${BASE_URL}anime/search?q=${query}`);
-    return res.data;
+// Generic function for GET requests
+async function get(url: string): Promise<any> {
+    try {
+        const response = await axios.get(url);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 }
 
-async function searchAnimeReturnFirstResultID(query: string): Promise<any> {
-    try {
-        const res = await searchAnime(query);
-        return res.animes[0].id;
-    }
-    catch (err) {
-        console.log(err);
-        return {
-            id: ''
-        }
-    }
+async function searchAnime(query: string): Promise<any> {
+    return get(`${BASE_URL}anime/search?q=${query}`);
+}
+
+async function searchAnimeReturnFirstResultID(query: string): Promise<string> {
+    const res = await searchAnime(query);
+    return res?.animes[0]?.id || '';
 }
 
 async function getAnimeEpisodes(animeID: string): Promise<any> {
-    // anime/{id}/episodes
-    const res = await axios.get(`${BASE_URL}anime/episodes/${animeID}`);
-    return res.data;
-
+    return get(`${BASE_URL}anime/episodes/${animeID}`);
 }
 
-async function getAnimeEpisodeIDByEpisodeNumber(animeID: string, episodeNumber: number): Promise<any> {
+async function getAnimeEpisodeIDByEpisodeNumber(animeID: string, episodeNumber: number): Promise<string> {
     const animeEpisodes = await getAnimeEpisodes(animeID);
-    const totalAnimeEpisodes = animeEpisodes.totalEpisodes || 0;
-    if (episodeNumber > totalAnimeEpisodes) {
-        return {
-            episodeId: ''
-        }
+    if (episodeNumber > (animeEpisodes?.totalEpisodes || 0)) {
+        return '';
     }
-    const arrEpisodeNumber = episodeNumber - 1;
-    const episodeID = animeEpisodes.episodes[arrEpisodeNumber].episodeId || '';
-    return {
-        episodeId: episodeID
-    }
+    return animeEpisodes?.episodes[episodeNumber - 1]?.episodeId || '';
 }
 
-async function getAnimeEpisodeStreamingLinksEpisodeSlug(episodeSlug: string): Promise<any> {
-    // https://api-aniwatch.onrender.com/anime/episode-srcs?id=steinsgate-3?ep=230&category=sub
-    var data = [];
-    // sub
-    try {
-        const resSub = await axios.get(`${BASE_URL}anime/episode-srcs?id=${episodeSlug}&category=sub`);
-        // @ts-ignore  
-        data.push(resSub.data);
+async function getAnimeEpisodeStreamingLinks(episodeSlug: string, categories: string[]): Promise<any[]> {
+    const data = [];
+    for (const category of categories) {
+        const res = await get(`${BASE_URL}anime/episode-srcs?id=${episodeSlug}&category=${category}`);
+        if (res) data.push(res);
     }
-    catch (err) {
-        // continue
-    }
-
-    // dub
-    try {
-        const resDub = await axios.get(`${BASE_URL}anime/episode-srcs?id=${episodeSlug}&category=dub`);
-        // @ts-ignore
-        data.push(resDub.data);
-    }
-    catch (err) {
-        // continue
-
-    }
-
     return data;
 }
 
 async function getAnimeEpisode(episodeNumber: number, animeName: string): Promise<any> {
     const animeID = await searchAnimeReturnFirstResultID(animeName);
     const episodeID = await getAnimeEpisodeIDByEpisodeNumber(animeID, episodeNumber);
-    const episodeSlug = `${episodeID.episodeId}`;
-    const episodeStreamingLinks = await getAnimeEpisodeStreamingLinksEpisodeSlug(episodeSlug);
-    return episodeStreamingLinks;
+    return getAnimeEpisodeStreamingLinks(episodeID, ['sub', 'dub']);
 }
 
-
-// DEBUGGING 
-
+// DEBUGGING
 getAnimeEpisode(1, "The Yuzuki Family's Four Sons").then((res) => {
-    const util = require('util')
-    console.log(util.inspect(res, { showHidden: false, depth: null }))
-})
+    const util = require('util');
+    console.log(util.inspect(res, { showHidden: false, depth: null }));
+});
